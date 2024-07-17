@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>Recife city center: Pedestrians and vehicules counting</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; background-color: #f8f9fa; }
+        #map { position: absolute; top: 70px; bottom: 0; width: 100%; }
+        .title { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 3; background: rgba(34, 34, 34, 0.9); padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); font-size: 18px; font-weight: bold; color: #fff; }
+        .controls { position: absolute; top: 70px; left: 10px; z-index: 1; background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); width: 250px; }
+        .summary { position: absolute; top: 70px; right: 10px; z-index: 1; background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); width: 300px; font-size: 12px; }
+        .legend { position: absolute; bottom: 10px; left: 10px; z-index: 1; background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); font-size: 12px; }
+        .controls label, .controls select { margin-bottom: 10px; width: 100%; padding: 8px; font-size: 14px; }
+        .controls select, .controls input { border: 1px solid #ccc; border-radius: 4px; }
+        .popup-content { font-size: 12px; line-height: 1.5; background: rgba(255, 255, 255, 0.9); padding: 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+        .popup-content h3 { margin: 0; font-size: 14px; color: #333; }
+        .popup-content p { margin: 5px 0; }
+        .marker { background-size: cover; width: 30px; height: 30px; cursor: pointer; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; }
+        .summary-table { width: 100%; border-collapse: collapse; }
+        .summary-table th, .summary-table td { padding: 4px; text-align: left; border-bottom: 1px solid #ddd; }
+        .summary-table th { background-color: #f2f2f2; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 5px; }
+        .legend-color { width: 12px; height: 12px; border-radius: 50%; margin-right: 5px; }
+        :root {
+            --car: #ff0004; 
+            --pedestrian: #008cff; 
+            --bus: #ff7f00;
+            --truck: #fb00ff;
+            --bike: #167b2c;
+            --motorcycle: #4810e0;
+        }
+        .scrollable-popup {
+        max-height: 150px; 
+        overflow-y: auto; 
+        overflow-x: hidden; 
+}
+
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div class="title">Recife city center: Pedestrians and vehicles counting</div>
+    <div class="controls">
+        <label for="typeFilter">Filter by Type:</label>
+        <select id="typeFilter">
+            <option value="all">All</option>
+            <option value="car">Car</option>
+            <option value="pedestrian">Pedestrian</option>
+            <option value="bus">Bus</option>
+            <option value="truck">Truck</option>
+            <option value="bike">Bike</option>
+            <option value="motorcycle">Motorcycle</option>
+        </select>
+        <label for="affluenceFilter">Filter by Affluence:</label>
+        <select id="affluenceFilter">
+            <option value="all">All</option>
+            <option value="low">Low (<30%)</option>
+            <option value="medium">Medium (30%-70%)</option>
+            <option value="high">High (>70%)</option>
+        </select>
+    </div>
+
+    <div class="summary">
+        <h3>Summary</h3>
+        <table class="summary-table">
+            </thead>
+            <tbody id="summaryTable">
+            </tbody>
+        </table>
+    </div>
+   
+    <div class="legend">
+        <h3>Legend</h3>
+        <div class="legend-item"><div class="legend-color" style="background-color: var(--pedestrian);"></div>Pedestrian</div>
+        <div class="legend-item"><div class="legend-color" style="background-color: var(--car);"></div>Car</div>
+        <div class="legend-item"><div class="legend-color" style="background-color: var(--bus);"></div>Bus</div>
+        <div class="legend-item"><div class="legend-color" style="background-color: var(--truck);"></div>Truck</div>
+        <div class="legend-item"><div class="legend-color" style="background-color: var(--bike);"></div>Bike</div>
+        <div class="legend-item"><div class="legend-color" style="background-color: var(--motorcycle);"></div>Motorcycle</div>
+
+    </div>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+<script src="/Users/micahhhhh/Documents/RECENTRO/Ped&veh counting/content/code.js"></script>
+
+</body>
+</html>
