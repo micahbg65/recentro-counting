@@ -163,7 +163,7 @@ function addMarkers(geojson) {
 
 async function createPopupContent(properties) {
     const streetViewUrl = getStreetViewImage(properties.latitude, properties.longitude);
-    const pointUrl = `web recentro/point-template copie.html?name=${encodeURIComponent(properties.name)}`; // Utilisez le chemin relatif ou l'URL correcte de votre application
+    const pointUrl = `point-template.html?name=${encodeURIComponent(properties.name)}`; // Utilisez le chemin relatif ou l'URL correcte de votre application
     console.log('URL générée pour le lien "See more":', pointUrl);
     
     return `
