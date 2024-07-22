@@ -56,6 +56,7 @@ async function displayPointDetails() {
     const titleElement = document.getElementById('title');
     const addressElement = document.getElementById('address');
     const streetViewImageElement = document.getElementById('streetViewImage');
+    const pointImageElement = document.getElementById('pointImage'); // Ajouté
 
     if (titleElement) {
         titleElement.innerText = `Details of ${pointData.NAME}`;
@@ -77,8 +78,28 @@ async function displayPointDetails() {
         console.error('Element with ID "streetViewImage" not found.');
     }
 
+    if (pointImageElement) {
+        const imageUrl = `img/${pointData.IMAGE}`; // Local path to the image
+        console.log(`URL de l'image du point: ${imageUrl}`);
+        pointImageElement.onload = function() {
+            console.log('Image du point complètement chargée');
+            if (pointImageElement.naturalWidth === 0 || pointImageElement.naturalHeight === 0) {
+                console.error('L\'image du point semble être vide ou corrompue.');
+            } else {
+                console.log('Dimensions de l\'image du point:', pointImageElement.naturalWidth, 'x', pointImageElement.naturalHeight);
+            }
+        };
+        pointImageElement.onerror = function(event) {
+            console.error('Erreur de chargement de l\'image du point:', event.target.src);
+        };
+        pointImageElement.src = imageUrl;
+    } else {
+        console.error('Element with ID "pointImage" not found.');
+    }
+
     createPieChart(data, pointName);
     createLineChart(data, pointName);
+    createDirectionPieChart(data, pointName);
 }
 
 function createPieChart(data, pointName) {
@@ -115,36 +136,51 @@ function createPieChart(data, pointName) {
     });
 }
 
-function createLineChart(data, pointName) {
+async function createLineChart(data, pointName) {
     const ctx = document.getElementById('lineChart').getContext('2d');
     const pointData = data.filter(point => point.NAME.trim() === pointName.trim());
 
-    const hours = pointData.map(point => point.HOURS);
-    const pedestrians = pointData.map(point => parseInt(point.PEDESTRIANS));
-    const vehicles = pointData.map(point => parseInt(point.VEHICLES));
+    const labels = [...new Set(pointData.map(point => point.HOURS))];
+    const pedestriansData = labels.map(label => {
+        const point = pointData.find(point => point.HOURS === label);
+        return point ? parseInt(point.PEDESTRIANS) : 0;
+    });
+    const vehiclesData = labels.map(label => {
+        const point = pointData.find(point => point.HOURS === label);
+        return point ? parseInt(point.VEHICLES) : 0;
+    });
 
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: hours,
+            labels: labels,
             datasets: [
                 {
                     label: 'Pedestrians',
-                    data: pedestrians,
+                    data: pedestriansData,
                     borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderWidth: 1,
-                    fill: false
+                    tension: 0.5  // Add this line for smoothing
                 },
                 {
                     label: 'Vehicles',
-                    data: vehicles,
+                    data: vehiclesData,
                     borderColor: 'rgba(153, 102, 255, 1)',
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
                     borderWidth: 1,
-                    fill: false
+                    tension: 0.5  // Add this line for smoothing
                 }
             ]
         },
         options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Pedestrians and Vehicles over Time'
+                }
+            },
             scales: {
                 x: {
                     title: {
@@ -156,14 +192,41 @@ function createLineChart(data, pointName) {
                     title: {
                         display: true,
                         text: 'Count'
-                    },
-                    beginAtZero: true
+                    }
                 }
-            },
+            }
+        }
+    });
+}
+
+function createDirectionPieChart(data, pointName) {
+    const ctx = document.getElementById('directionPieChart').getContext('2d');
+    const pointData = data.filter(point => point.NAME.trim() === pointName.trim());
+
+    const labels = [...new Set(pointData.map(point => point.DIRECTION))];
+    const totalPedestrians = labels.map(label => {
+        return pointData
+            .filter(point => point.DIRECTION === label)
+            .reduce((sum, point) => sum + parseInt(point["TOTAL PEDESTRIANS"]), 0);
+    });
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Pedestrians by Direction',
+                data: totalPedestrians,
+                backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#00FF00', '#FF7C00'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
             plugins: {
                 title: {
                     display: true,
-                    text: 'Number of Pedestrians and Vehicles Over Time'
+                    text: 'Pedestrians direction'
                 }
             }
         }

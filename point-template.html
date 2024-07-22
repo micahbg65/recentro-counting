@@ -28,6 +28,13 @@
             margin-bottom: 20px;
         }
 
+        #pointImage {
+            width: 60%; /* Ajustez la taille selon vos besoins */
+            max-width: 500px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
         #address {
             font-size: 15px;
             margin-top: 0px;
@@ -50,10 +57,14 @@
     <div class="container">
         <h1 id="title">Details of Point</h1>
         <img id="streetViewImage" src="" alt="Google Street View Image">
+        <img id="pointImage" src="" alt="Point Image"> <!-- Ajouté -->
         <p id="address">Address: </p>
         <div class="chart-container">
             <canvas id="pieChart" width="300" height="300"></canvas>
-            <canvas id="lineChart" width="300" height="300"></canvas>
+            <canvas id="directionPieChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="lineChart" width="600" height="600"></canvas>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
