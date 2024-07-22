@@ -21,18 +21,17 @@
             margin-bottom: 20px;
         }
 
-        #streetViewImage {
-            width: 60%;
-            max-width: 300px;
-            height: auto;
-            margin-bottom: 20px;
+        .image-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center; /* Aligne les images verticalement au centre */
+            margin-top: 20px;
         }
 
-        #pointImage {
-            width: 60%; /* Ajustez la taille selon vos besoins */
-            max-width: 500px;
+        .image-container img {
+            width: 45%; /* Ajustez la largeur des images selon vos besoins */
+            max-width: 400px; /* Ajustez la largeur maximale des images */
             height: auto;
-            margin-bottom: 20px;
         }
 
         #address {
@@ -51,20 +50,33 @@
             width: 400px !important;
             height: 400px !important;
         }
+
+        .line-chart-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .line-chart-container canvas {
+            width: 600px !important; /* Ajustez la largeur selon vos besoins */
+            height: 400px !important; /* Ajustez la hauteur selon vos besoins */
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 id="title">Details of Point</h1>
-        <img id="streetViewImage" src="" alt="Google Street View Image">
-        <img id="pointImage" src="" alt="Point Image"> <!-- Ajouté -->
+        <div class="image-container">
+            <img id="streetViewImage" src="" alt="Google Street View Image">
+            <img id="pointImage" src="" alt="Point Image">
+        </div>
         <p id="address">Address: </p>
         <div class="chart-container">
             <canvas id="pieChart" width="300" height="300"></canvas>
             <canvas id="directionPieChart" width="300" height="300"></canvas>
         </div>
-        <div class="chart-container">
-            <canvas id="lineChart" width="600" height="600"></canvas>
+        <div class="line-chart-container">
+            <canvas id="lineChart" width="600" height="400"></canvas>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
