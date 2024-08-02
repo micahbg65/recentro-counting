@@ -216,9 +216,8 @@
 
 /* Media Queries pour les petits écrans */
 @media (max-width: 768px) {
-    .controls,
-    .summary {
-        width: 90%;
+    .controls {
+        width: 25%;
         left: 5%;
         right: 5%;
         font-size: 0.625rem; /* 10px */
@@ -231,13 +230,30 @@
         font-size: 0.75rem; /* 12px */
     }
 
+    .summary {
+        width: 50%;
+        right: 5%;
+        left: auto;
+        font-size: 0.625rem; /* 10px */
+        padding: 0.625rem; /* 10px */
+    }
+
+    .summary h3 {
+        font-size: 0.75rem; /* 12px */
+    }
+
+    .summary-table th,
+    .summary-table td {
+        font-size: 0.75rem; /* 12px */
+    }
+
     .title {
         font-size: 0.6875rem; /* 11px */
         padding: 0.5rem 1rem; /* 8px 16px */
     }
 
     .tabs {
-        top: 0.625rem; /* 10px */
+        top: 2.5rem; /* 40px */
     }
 
     .tab-button {
