@@ -1,18 +1,100 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoicGxndWVkZXMiLCJhIjoiZEg0TXRZOCJ9.J1TTOXpWW3ERgXWcG2uTdQ';
 
-const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11',
-    center: [-34.8781405, -8.0641775],
-    zoom: 15
+let map;
+let mapParkings;
+
+document.addEventListener('DOMContentLoaded', () => {
+    map = initializeMap('map');
+    
+    // Diagnostics pour map
+    if (map) {
+        console.log('Map initialized:', map);
+        map.on('load', initMap);
+    } else {
+        console.error('Map not initialized properly.');
+    }
+
+    mapParkings = initializeMap('map-parkings');
+    
+    // Diagnostics pour mapParkings
+    if (mapParkings) {
+        console.log('Map Parkings initialized:', mapParkings);
+    } else {
+        console.error('Map Parkings not initialized properly.');
+    }
+    
+    // Initialisation de la carte pour l'onglet par défaut "counting"
+    showTab('counting');
 });
+
+function showTab(tabId) {
+    // Masquer tous les contenus des onglets
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    
+    // Désactiver tous les boutons des onglets
+    document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+    
+    // Afficher le contenu de l'onglet sélectionné
+    const tabContent = document.getElementById(tabId);
+    tabContent.classList.add('active');
+    
+    // Activer le bouton de l'onglet sélectionné
+    document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
+
+    // Vérifier le conteneur de la carte
+    console.log(`Container for ${tabId}:`, tabContent.querySelector(`#${tabId === 'counting' ? 'map' : 'map-parkings'}`));
+    
+    // Initialiser la carte pour l'onglet "counting"
+    if (tabId === 'counting') {
+        if (!map) {
+            map = initializeMap('map');
+        }
+    }
+    
+    // Initialiser la carte pour l'onglet "parkings"
+    else if (tabId === 'parkings') {
+        if (!mapParkings) {
+            mapParkings = initializeMap('map-parkings');
+        }
+    }
+}
+
+function initializeMap(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Container ${containerId} not found`);
+        return null;
+    }
+    const map = new mapboxgl.Map({
+        container: containerId,
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-34.8781405, -8.0641775],
+        zoom: 15
+    });
+    
+    // Vérifiez que la carte est correctement initialisée avant d'ajouter des écouteurs d'événements
+    map.on('load', function() {
+        console.log(`Map loaded for container: ${containerId}`);
+        // Ajoutez ici vos écouteurs d'événements Mapbox
+    });
+    
+    return map;
+}
+
+function initMap() {
+    console.log('Map loaded and ready to be customized.');
+    // Ajoutez ici vos logiques supplémentaires de carte
+}
+
+// Ajoutez des diagnostics pour vérifier les étapes de votre code
+console.log('Document loaded and script executed.');
 
 const colors = {
     'car': '#ff0004',
     'pedestrian': '#008cff',
     'bus': '#ff7f00',
     'truck': '#fb00ff',
-    'bike': '#167b2c',
+    'bike': '#164420',
     'motorcycle': '#4810e0',
     'other': '#000000'
 };
@@ -20,10 +102,23 @@ const colors = {
 const apiKey = 'AIzaSyAPFFLWVZBVgufZOH8lG6q-yMhbG7Bg8_c';
 const sheetId = '14Iq-jUzOtkJ8oEZZKiVldaSfBYHFO7MmBNZoPskRntE';
 const dataUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Lista?key=${apiKey}`;
+const dataUrlParkings = 'https://sheets.googleapis.com/v4/spreadsheets/1nrsbYPOiTmHAPPe_y9aeaat5KIK6x5_18V-3LxCyYsk/values/estacionamentos?key=AIzaSyAPFFLWVZBVgufZOH8lG6q-yMhbG7Bg8_c';
+
 
 //https://sheets.googleapis.com/v4/spreadsheets/14Iq-jUzOtkJ8oEZZKiVldaSfBYHFO7MmBNZoPskRntE/values/Lista?key=AIzaSyAPFFLWVZBVgufZOH8lG6q-yMhbG7Bg8_c
 
 let data = [];
+
+async function initMap() {
+    data = await loadGoogleSheetsData(dataUrl);
+    console.log(data); // Vérifiez les données récupérées
+
+    const geojson = createGeoJSON(data);
+    console.log(geojson); // Vérifiez le GeoJSON créé
+
+    addMarkers(geojson);
+    filterMarkers(data, 'all', 'all');
+}
 
 async function loadGoogleSheetsData(url) {
     try {
@@ -115,8 +210,8 @@ function addMarkers(geojson) {
         paint: {
             'circle-radius': [
                 'interpolate', ['linear'], ['get', 'units'],
-                0, 4,
-                50000, 30
+                0, 10,
+                40000, 50
             ],
             'circle-color': ['get', 'color'],
             'circle-stroke-color': '#ffffff',
@@ -163,7 +258,7 @@ function addMarkers(geojson) {
 
 async function createPopupContent(properties) {
     const streetViewUrl = getStreetViewImage(properties.latitude, properties.longitude);
-    const pointUrl = `point-template.html?name=${encodeURIComponent(properties.name)}`; // Utilisez le chemin relatif ou l'URL correcte de votre application
+    const pointUrl = `point-template.html?name=${encodeURIComponent(properties.name)}`; 
     console.log('URL générée pour le lien "See more":', pointUrl);
     
     return `
@@ -183,7 +278,7 @@ function getStreetViewImage(lat, lng) {
     return streetViewUrl;
 }
 
-function updateSummaryTable(maxUnit, maxUnitType, totalUnits) {
+function updateSummaryTable(filteredData) {
     const summaryTable = document.getElementById('summaryTable');
     if (!summaryTable) return;
 
@@ -193,7 +288,7 @@ function updateSummaryTable(maxUnit, maxUnitType, totalUnits) {
     // Create and append header row
     const headerRow = document.createElement('tr');
     const unitHeader = document.createElement('th');
-    unitHeader.textContent = 'Highest unit';
+    unitHeader.textContent = 'Units';
     const typeHeader = document.createElement('th');
     typeHeader.textContent = 'Type';
     const totalHeader = document.createElement('th');
@@ -203,18 +298,36 @@ function updateSummaryTable(maxUnit, maxUnitType, totalUnits) {
     headerRow.appendChild(totalHeader);
     summaryTable.appendChild(headerRow);
 
-    // Create and append data row
-    const dataRow = document.createElement('tr');
-    const unitCell = document.createElement('td');
-    unitCell.textContent = maxUnit;
-    const typeCell = document.createElement('td');
-    typeCell.textContent = maxUnitType;
-    const totalCell = document.createElement('td');
-    totalCell.textContent = totalUnits;
-    dataRow.appendChild(unitCell);
-    dataRow.appendChild(typeCell);
-    dataRow.appendChild(totalCell);
-    summaryTable.appendChild(dataRow);
+    // Calculate the total units
+    const totalUnits = filteredData.reduce((sum, point) => sum + point.units, 0);
+
+    // Append a row to display the total units at the top
+    const totalRow = document.createElement('tr');
+    const emptyCell1 = document.createElement('td');
+    emptyCell1.textContent = ''; // No text in this cell
+    const emptyCell2 = document.createElement('td');
+    emptyCell2.textContent = ''; // No text in this cell
+    const totalValueCell = document.createElement('td');
+    totalValueCell.textContent = totalUnits;
+    totalRow.appendChild(emptyCell1);
+    totalRow.appendChild(emptyCell2);
+    totalRow.appendChild(totalValueCell);
+    summaryTable.appendChild(totalRow);
+
+    // Sort the filtered data by 'units' in descending order
+    const sortedData = filteredData.sort((a, b) => b.units - a.units);
+
+    // Create and append data rows for each entry
+    sortedData.forEach(point => {
+        const dataRow = document.createElement('tr');
+        const unitCell = document.createElement('td');
+        unitCell.textContent = point.units;
+        const typeCell = document.createElement('td');
+        typeCell.textContent = point.type;
+        dataRow.appendChild(unitCell);
+        dataRow.appendChild(typeCell);
+        summaryTable.appendChild(dataRow);
+    });
 }
 
 async function filterMarkers(data, typeFilter, affluenceFilter) {
@@ -222,83 +335,53 @@ async function filterMarkers(data, typeFilter, affluenceFilter) {
 
     let filteredData = data.filter(point => {
         const typeMatch = typeFilter === 'all' || (point.TYPE && point.TYPE.toLowerCase().replace(/\s+/g, '-').replace('.', '') === typeFilter);
-        const units = parseFloat(point.UNITS);
-        const validUnits = isNaN(units) ? 0 : units;
-
         return typeMatch;
     });
 
-    let totalUnits = filteredData.reduce((sum, point) => {
-        const units = parseFloat(point.UNITS);
-        return sum + (isNaN(units) ? 0 : units);
-    }, 0);
-
-    console.log('Total units:', totalUnits);
-
-    // Trouver l'unité la plus élevée parmi les données filtrées
+    // Calculer le total des unités et filtrer par affluence
+    let totalUnits = 0;
     let maxUnit = 0;
     let maxUnitType = '';
 
-    filteredData.forEach(point => {
+    filteredData = filteredData.map(point => {
         const units = parseFloat(point.UNITS);
-        if (!isNaN(units) && units > maxUnit) {
-            maxUnit = units;
-            maxUnitType = point.TYPE;
+        if (!isNaN(units)) {
+            totalUnits += units;
+            if (units > maxUnit) {
+                maxUnit = units;
+                maxUnitType = point.TYPE;
+            }
         }
+        return {
+            ...point,
+            units: units,
+            type: point.TYPE
+        };
     });
 
-    // Définir les seuils pour les filtres d'affluence
     const lowThreshold = 0.3 * maxUnit;
     const highThreshold = 0.7 * maxUnit;
 
-    console.log('Max units:', maxUnit, 'Low threshold:', lowThreshold, 'High threshold:', highThreshold);
-
-    // Appliquer le filtre d'affluence en utilisant les seuils
     let affluenceFilteredData = filteredData.filter(point => {
-        const units = parseFloat(point.UNITS);
-        const validUnits = isNaN(units) ? 0 : units;
-
+        const units = point.units;
         if (affluenceFilter === 'low') {
-            return validUnits < lowThreshold;
+            return units < lowThreshold;
         } else if (affluenceFilter === 'medium') {
-            return validUnits >= lowThreshold && validUnits <= highThreshold;
+            return units >= lowThreshold && units <= highThreshold;
         } else if (affluenceFilter === 'high') {
-            return validUnits > highThreshold;
+            return units > highThreshold;
         } else {
-            return true; // Aucun filtre d'affluence appliqué
+            return true;
         }
     });
 
-    console.log('Filtered data:', affluenceFilteredData);
+    // Update the summary table
+    updateSummaryTable(affluenceFilteredData);
 
-        // Recalculer le total des unités sur les données filtrées par affluence
-        let affluenceTotalUnits = affluenceFilteredData.reduce((sum, point) => {
-            const units = parseFloat(point.UNITS);
-            return sum + (isNaN(units) ? 0 : units);
-        }, 0);
-    
-        // Trouver l'unité la plus élevée parmi les données filtrées par affluence
-        let affluenceMaxUnit = 0;
-        let affluenceMaxUnitType = '';
-    
-        affluenceFilteredData.forEach(point => {
-            const units = parseFloat(point.UNITS);
-            if (!isNaN(units) && units > affluenceMaxUnit) {
-                affluenceMaxUnit = units;
-                affluenceMaxUnitType = point.TYPE;
-            }
-        });
-    
-        console.log('Affluence Filtered Data:', affluenceFilteredData);
-        console.log('Affluence Total Units:', affluenceTotalUnits);
-        console.log('Affluence Max Unit:', affluenceMaxUnit, 'Type:', affluenceMaxUnitType);
-    
-        // Mettre à jour la table de résumé
-        updateSummaryTable(affluenceMaxUnit, affluenceMaxUnitType, affluenceTotalUnits);
-    
-        const geojson = createGeoJSON(affluenceFilteredData);
-        addMarkers(geojson);
-    }
+    // Update the map
+    const geojson = createGeoJSON(affluenceFilteredData);
+    addMarkers(geojson);
+}
 
 async function initMap() {
     data = await loadGoogleSheetsData(dataUrl);
@@ -321,3 +404,6 @@ document.getElementById('affluenceFilter').addEventListener('change', (e) => {
 });
 
 map.on('load', initMap);
+
+
+
