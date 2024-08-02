@@ -10,196 +10,233 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f8f9fa;
-        }
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f8f9fa;
+}
 
-        #map,
-        #map-parkings {
-            position: absolute;
-            top: 70px;
-            bottom: 0;
-            width: 100%;
-            height: calc(100vh - 70px);
-        }
+/* Le container pour la carte et les contrôles */
+#map,
+#map-parkings {
+    position: absolute;
+    top: 4.375rem; /* 70px */
+    bottom: 0;
+    width: 100%;
+    height: calc(100vh - 4.375rem); /* 100vh - 70px */
+}
 
-        .title {
-            position: absolute;
-            top: 1px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3;
-            background: rgba(34, 34, 34, 0.9);
-            padding: 10px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            font-size: 13px;
-            font-weight: bold;
-            color: #fff;
-            text-align: center;
-        }
+/* Titre central */
+.title {
+    position: absolute;
+    top: 0.0625rem; /* 1px */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    background: rgba(34, 34, 34, 0.9);
+    padding: 0.625rem 1.25rem; /* 10px 20px */
+    border-radius: 0.5rem; /* 8px */
+    box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.3); /* 0 2px 6px */
+    font-size: 0.8125rem; /* 13px */
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+}
 
-        .tabs {
-            position: absolute;
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
-            background: rgba(34, 34, 34, 0.9);
-            padding: 5px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            display: flex;
-            justify-content: center;
-        }
+/* Conteneur pour les onglets */
+.tabs {
+    position: absolute;
+    top: 1.875rem; /* 30px */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    background: rgba(34, 34, 34, 0.9);
+    padding: 0.3125rem; /* 5px */
+    border-radius: 0.5rem; /* 8px */
+    box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.3); /* 0 2px 6px */
+    display: flex;
+    justify-content: center;
+}
 
-        .tab-button {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 10px 13px;
-            margin: 0 2px;
-            font-size: 10px;
-            cursor: pointer;
-        }
+/* Boutons des onglets */
+.tab-button {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-radius: 0.25rem; /* 4px */
+    padding: 0.625rem 0.8125rem; /* 10px 13px */
+    margin: 0 0.125rem; /* 0 2px */
+    font-size: 0.625rem; /* 10px */
+    cursor: pointer;
+}
 
-        .tab-button.active {
-            background: #fff;
-            border-bottom: 1px solid transparent;
-        }
+.tab-button.active {
+    background: #fff;
+    border-bottom: 1px solid transparent;
+}
 
-        .controls,
-        .summary {
-            position: absolute;
-            top: 70px;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            font-size: 12px;
-        }
+/* Panneaux de contrôle et résumé */
+.controls,
+.summary {
+    position: absolute;
+    top: 4.375rem; /* 70px */
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.9375rem; /* 15px */
+    border-radius: 0.5rem; /* 8px */
+    box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.3); /* 0 2px 6px */
+    font-size: 0.75rem; /* 12px */
+}
 
-        .controls {
-            left: 10px;
-            width: 250px;
-        }
+.controls {
+    left: 0.625rem; /* 10px */
+    width: 15.625rem; /* 250px */
+}
 
-        .summary {
-            right: 10px;
-            width: 300px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
+.summary {
+    right: 0.625rem; /* 10px */
+    width: 18.75rem; /* 300px */
+    max-height: 25rem; /* 400px */
+    overflow-y: auto;
+}
 
-        .controls label,
-        .controls select,
-        .controls input {
-            margin-bottom: 10px;
-            width: 100%;
-            padding: 8px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
+/* Styles pour les contrôles */
+.controls label,
+.controls select,
+.controls input {
+    margin-bottom: 0.625rem; /* 10px */
+    width: 100%;
+    padding: 0.5rem; /* 8px */
+    font-size: 0.875rem; /* 14px */
+    border: 1px solid #ccc;
+    border-radius: 0.25rem; /* 4px */
+}
 
-        .popup-content {
-            font-size: 12px;
-            line-height: 1.5;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        }
+/* Contenu des pop-ups */
+.popup-content {
+    font-size: 0.75rem; /* 12px */
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.625rem; /* 10px */
+    border-radius: 0.5rem; /* 8px */
+    box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.3); /* 0 2px 6px */
+}
 
-        .popup-content h3 {
-            margin: 0;
-            font-size: 14px;
-            color: #333;
-        }
+.popup-content h3 {
+    margin: 0;
+    font-size: 0.875rem; /* 14px */
+    color: #333;
+}
 
-        .popup-content p {
-            margin: 5px 0;
-        }
+.popup-content p {
+    margin: 0.3125rem 0; /* 5px 0 */
+}
 
-        .marker {
-            background-size: cover;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-        }
+/* Marqueurs de carte */
+.marker {
+    background-size: cover;
+    width: 1.875rem; /* 30px */
+    height: 1.875rem; /* 30px */
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+}
 
-        .summary-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+/* Tableau récapitulatif */
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-        .summary-table th,
-        .summary-table td {
-            padding: 4px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+.summary-table th,
+.summary-table td {
+    padding: 0.25rem; /* 4px */
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
 
-        .summary-table th {
-            background-color: #f2f2f2;
-        }
+.summary-table th {
+    background-color: #f2f2f2;
+}
 
-        .legend {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            font-size: 12px;
-        }
+/* Légende */
+.legend {
+    position: absolute;
+    bottom: 0.625rem; /* 10px */
+    left: 0.625rem; /* 10px */
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.9375rem; /* 15px */
+    border-radius: 0.5rem; /* 8px */
+    box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.3); /* 0 2px 6px */
+    font-size: 0.75rem; /* 12px */
+}
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.3125rem; /* 5px */
+}
 
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
+.legend-color {
+    width: 0.75rem; /* 12px */
+    height: 0.75rem; /* 12px */
+    border-radius: 50%;
+    margin-right: 0.3125rem; /* 5px */
+}
 
-        .scrollable-popup {
-            max-height: 150px;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
+/* Contenu défilant dans les pop-ups */
+.scrollable-popup {
+    max-height: 9.375rem; /* 150px */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
-        :root {
-            --car: #ff0004;
-            --pedestrian: #008cff;
-            --bus: #ff7f00;
-            --truck: #fb00ff;
-            --bike: #164420;
-            --motorcycle: #4810e0;
-        }
+/* Définition des couleurs pour les types de véhicules et piétons */
+:root {
+    --car: #ff0004;
+    --pedestrian: #008cff;
+    --bus: #ff7f00;
+    --truck: #fb00ff;
+    --bike: #164420;
+    --motorcycle: #4810e0;
+}
 
-        .tab-content {
-            display: none;
-            height: 100%;
-        }
+/* Contenu des onglets */
+.tab-content {
+    display: none;
+    height: 100%;
+}
 
-        .tab-content.active {
-            display: block;
-        }
+.tab-content.active {
+    display: block;
+}
+
+/* Media Queries pour les petits écrans */
+@media (max-width: 768px) {
+    .controls,
+    .summary {
+        width: 90%;
+        left: 5%;
+        right: 5%;
+    }
+
+    .title {
+        font-size: 0.6875rem; /* 11px */
+        padding: 0.5rem 1rem; /* 8px 16px */
+    }
+
+    .tabs {
+        top: 0.625rem; /* 10px */
+    }
+
+    .tab-button {
+        font-size: 0.5rem; /* 8px */
+        padding: 0.5rem; /* 8px 10px */
+    }
+}
     </style>
 </head>
 
