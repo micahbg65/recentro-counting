@@ -61,6 +61,45 @@
             width: 600px !important; /* Ajustez la largeur selon vos besoins */
             height: 400px !important; /* Ajustez la hauteur selon vos besoins */
         }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                padding: 10px;
+            }
+
+            #title {
+                font-size: 18px;
+            }
+
+            .image-container {
+                flex-direction: column;
+            }
+
+            .image-container img {
+                width: 80%;
+                max-width: 200px;
+                margin-bottom: 10px;
+            }
+
+            #address {
+                font-size: 12px;
+            }
+
+            .chart-container {
+                flex-direction: column;
+            }
+
+            canvas {
+                width: 100px !important;
+                height: 100px !important;
+            }
+
+            .line-chart-container canvas {
+                width: 150px !important;
+                height: 100px !important;
+            }
+        }
     </style>
 </head>
 <body>
